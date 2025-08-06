@@ -208,7 +208,7 @@ def push_new_level():
     cursor.execute("""
         INSERT INTO Level (game_id, sound_id, difficulty_name, difficulty_value, length, release_date)
         VALUES (?, ?, ?, ?, ?, ?)
-    """, (song_id, game_id, dif_name, dif_value, len, date))
+    """, (game_id, song_id, dif_name, dif_value, len, date))
 
     conn.commit()
 

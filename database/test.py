@@ -3,6 +3,7 @@ import sqlite3
 conn = sqlite3.connect('rhythm_game.db')  
 cursor = conn.cursor()
 
+'''
 cursor.execute("""
     SELECT 
         Sound.id, Sound.main_name, Sound.genre, Sound.main_bpm, Sound.min_bpm, Sound.max_bpm, 
@@ -21,6 +22,10 @@ rows = cursor.fetchall()
 
 for row in rows:
     print(row)
+'''
+
+cursor.execute("DELETE FROM Level WHERE game_id = 8;")
+conn.commit()
 
 # Clean up
 cursor.close()
