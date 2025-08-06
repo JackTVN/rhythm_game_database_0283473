@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS Sound (
     min_bpm FLOAT,
     max_bpm FLOAT,
 
-    main_audio_source TEXT,
+    main_audio_source TEXT
 );
 
 CREATE TABLE IF NOT EXISTS TranslatedSoundName (
@@ -75,6 +75,12 @@ CREATE TABLE IF NOT EXISTS Level (
     release_date DATE,
 
     chart BLOB
+);
+
+CREATE TABLE IF NOT EXISTS ChartBy (
+    level_id INTEGER REFERENCES Level(id),
+    charter_id INTEGER REFERENCES Charter(id),
+    PRIMARY KEY (level_id, charter_id)
 );
 
 -- ALBUM

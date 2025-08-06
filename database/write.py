@@ -87,35 +87,85 @@ def get_id_game():
 
     return cursor.fetchall()
 
+def get_id_contributor():
+    cursor.execute("""
+        SELECT Contributor.id, Contributor.name FROM Contributor;
+    """)
+
+    return cursor.fetchall()
+
 # CLI-like thing
 def push_new_song():
-    print("Name: ")
-    song_name = input()
-    
-    print("Genre: ")
-    song_genre = input()
-
-    print("Main BPM: ")
-    main_bpm = input()
-    
-    print("Min BPM: ")
-    min_bpm = input()
-    
-    print("Max BPM: ")
-    max_bpm = input()
-
-    print("Source Link: ")
-    source = input()
+    song_name = input("Name: ")
+    song_genre = input("Genre: ")
+    main_bpm = input("Main BPM: ")
+    min_bpm = input("Min BPM: ")
+    max_bpm = input("Max BPM: ")
+    source = input("Source Link: ")
 
     cursor.execute('''
-        INSERT INTO Sound (main_name, genre, main_bpm, min_bpm, max_bpm, source)
-        VALUES (?, ?, ?, ?<, ?, ?)
+        INSERT INTO Sound (main_name, genre, main_bpm, min_bpm, max_bpm, main_audio_source)
+        VALUES (?, ?, ?, ?, ?, ?)
     ''', (song_name, song_genre, float(main_bpm), float(min_bpm), float(max_bpm), source))
 
     conn.commit()
 
     print("New song added successfully")
 
+def push_made_by():
+    command = input("Want to check the sound list before crediting? (Y/N): ")
+
+    match command:
+        case "Y":
+            rows = get_id_song()
+
+            print("Sounds List:")
+            for row in rows:
+                print(str(row[0]) + ". " + row[1])
+
+    sound_id = input("Sound ID: ")
+
+    isAdding = True
+    contributor_id = None
+    contributor_role = None
+    
+    while isAdding:
+        command = input("Want to check the contributors list before crediting? (Y/N): ")
+
+        match command:
+            case "Y":
+                rows = get_id_contributor()
+
+                print("Contributors List:")
+                for row in rows:
+                    print(str(row[0]) + ". " + row[1])
+
+        command = input("Is the contributor in the current list? (Y/N): ")
+
+        match command:
+            case "N":
+                contributor_id = push_new_contributor()
+                contributor_role = input("What is their role on the song?: ")
+
+            case "Y":
+                contributor_id = input("Contributor ID: ")
+                contributor_role = input("What is their role on the song?: ")
+
+        cursor.execute("""
+            INSERT INTO MadeBy (sound_id, contributor_id, role)
+            VALUES (?, ?, ?);
+        """, (sound_id, contributor_id, contributor_role))
+
+        conn.commit()
+
+        command = input("Are there other contributors you want to add to the song? (Y/N)")
+
+        match command:
+            case "N":
+                isAdding = False
+
+    print("Song Credited!")
+    
 def push_new_level():
     print("Do you want to check the song list and the game list before adding? (Y/N)")
     command = input()
@@ -155,13 +205,28 @@ def push_new_level():
     print("Release Date: ")
     date = input()
 
-    cursor.execute('''
+    cursor.execute("""
         INSERT INTO Level (game_id, sound_id, difficulty_name, difficulty_value, length, release_date)
         VALUES (?, ?, ?, ?, ?, ?)
-    ''', (song_id, game_id, dif_name, dif_value, len, date))
+    """, (song_id, game_id, dif_name, dif_value, len, date))
+
+    conn.commit()
 
     print("New level added!")
 
+def push_new_contributor():
+    name = input("Add new Contributor: ")
+
+    cursor.execute("""
+        INSERT INTO Contributor (name)
+        VALUES (?);
+    """, (name,))
+
+    conn.commit()
+
+    print("New Contributor Added!")
+
+    return cursor.lastrowid
 
 # CHOICE - print out function for user to use
 def choice_game_list():
@@ -184,7 +249,8 @@ print("Welcome to the Rhythm Game Database Writer. What do you want to do?")
 
 while isRunning:
     print("1. Add a new song")
-    print("2. Add a level")
+    print("2. Credit (add a contributor to) a song")
+    print("3. Add a level")
     print("99. Quit")
 
     command = input()
@@ -193,14 +259,17 @@ while isRunning:
         case '1':
             push_new_song()
 
-        case '2':
+        case "2":
+            push_made_by()
+
+        case '3':
             push_new_level()
 
         case '99':
             isRunning = False
             continue
 
-print("Viewer closed!")
+print("Writer closed!")
 
 # Clean up
 cursor.close()

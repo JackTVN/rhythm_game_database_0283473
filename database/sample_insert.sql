@@ -6,7 +6,10 @@ DELETE FROM Level;
 DELETE FROM Game;
 DELETE FROM Charter;
 DELETE FROM Contributor;
+DELETE FROM ChartBy;
 DELETE FROM Sound;
+DELETE FROM Album;
+DELETE FROM AlbumSound;
 DELETE FROM sqlite_sequence; 
 
 -- SOUND
@@ -120,3 +123,26 @@ INSERT INTO Level (game_id, sound_id, difficulty_name, difficulty_value, length,
 (6, 7, 'Past', 3, 125, '2017-06-02'),
 (6, 7, 'Present', 7, 125, '2017-06-02'),
 (6, 7, 'Future', 9, 125, '2017-06-02');
+
+-- CHART CREDIT
+INSERT INTO ChartBy (level_id, charter_id) VALUES
+(16, 1),
+(16, 2),
+(17, 1),
+(17, 2),
+(18, 1),
+(18, 2),
+(19, 1),
+(19, 2),
+(39, 1),
+(40, 1),
+(41, 1);
+
+-- ALBUM
+INSERT INTO Album (name, release_date) VALUES
+('maimai Collection', '2024-02-12');
+
+INSERT INTO AlbumSound (album_id, sound_id) VALUES
+(1, 1),
+(1, 2),
+(1, 3);

@@ -62,6 +62,10 @@ def print_all(rows):
 
             contributor_list.append(contributor_id)
 
+        
+        if level_id == None: continue
+        if game_id == None: continue
+
         # Same thing for level list. Be sure to separate by game
         if (not level_id in level_list):
             if (not game_id in game_list):
@@ -87,8 +91,8 @@ def get_song_list():
         FROM MadeBy 
         INNER JOIN Sound ON MadeBy.sound_id = Sound.id
         INNER JOIN Contributor ON MadeBy.contributor_id = Contributor.id
-        INNER JOIN Level ON Sound.id = Level.sound_id
-        INNER JOIN Game ON Level.game_id = Game.id
+        LEFT OUTER JOIN Level ON Sound.id = Level.sound_id
+        LEFT OUTER JOIN Game ON Level.game_id = Game.id
         ORDER BY Sound.id, Contributor.id, Level.game_id;
     """)
 
@@ -122,8 +126,8 @@ def get_song_by_bpm(min_bpm, max_bpm):
         FROM MadeBy 
         INNER JOIN Sound ON MadeBy.sound_id = Sound.id
         INNER JOIN Contributor ON MadeBy.contributor_id = Contributor.id
-        INNER JOIN Level ON Sound.id = Level.sound_id
-        INNER JOIN Game ON Level.game_id = Game.id
+        LEFT OUTER JOIN Level ON Sound.id = Level.sound_id
+        LEFT OUTER JOIN Game ON Level.game_id = Game.id
         WHERE Sound.main_bpm >= ? AND Sound.main_bpm <= ?
         ORDER BY Sound.id, Contributor.id, Level.game_id
     """, (min_bpm, max_bpm))
